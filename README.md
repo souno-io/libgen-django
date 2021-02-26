@@ -3,11 +3,11 @@ libgen-django,使用Django框架实现的Libgen web服务端。
 
 ### 截图
 
-![](.\截图\1.png)
+![1](截图\1.png)
 
-![3](.\截图\3.png)
+![3](截图\3.png)
 
-![4](.\截图\4.png)
+![4](截图\4.png)
 
 ### requirements
 
