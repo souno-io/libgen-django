@@ -1,0 +1,55 @@
+{% extends 'index_base.html' %}
+{% load static %}
+{% block content %}
+    <body>
+		<!-- Main -->
+        <section id="main" class="container">
+				<header>
+					<h2>登 录</h2>
+					<p>如没有登录账号，请联系信息中心申领账号</p>
+				</header>
+
+                    <!-- Form -->
+							<section class="box">
+								<form>
+									<div class="row center uniform half ollapse-at-2">
+										<div align="center" class="12u">
+											<input type="text" name="name" id="name" value="" placeholder="账号" />
+										</div>
+                                    </div>
+                                    <div class="row uniform half">
+                                        <div align="center" class="12u">
+											<input type="password" name="passwd" id="passwd" value="" placeholder="密码" />
+										</div>
+									</div>
+									<div class="row uniform">
+										<div align="center" class="12u">
+											<ul class="actions">
+												<li><a onclick="getContent()" class="button">登录</a></li>
+											</ul>
+										</div>
+									</div>
+								</form>
+                    </section>
+                </section>
+                <script>
+                            $.ajaxSetup({data: {csrfmiddlewaretoken: '{{ csrf_token }}' }});
+                            function getContent() {
+                                if (document.getElementById("name").value === ""||document.getElementById("passwd").value===""){
+                                    alert("请完整填写表项！");
+                                }else{
+                                    var name = document.getElementById("name").value;
+                                    var passwd = document.getElementById("passwd").value;
+                                    $.post("{% url 'login_check' %}",{'name':name, 'passwd':passwd},function(result){
+                                        if(result==='success'){
+                                           location.href = "{% url 'index' %}";
+                                        }else {
+                                            layer.alert('登录失败，请检查输入信息是否正确！')
+                                        }
+                                    });
+                                    console.log(title,name)
+                                }
+                                }
+                </script>
+		<!-- Footer -->
+{% endblock %}

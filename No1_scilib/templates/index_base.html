@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+
+<html lang="zh">
+<head>
+    <title>{{ web_name }}</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    {% load static %}
+    <link rel="icon" href="{% static 'website/images/icon/favicon.ico' %}" type="image/x-icon">
+    <!--[if lte IE 8]><script src="{% static 'website/css/ie/html5shiv.js' %}"></script><![endif]-->
+    <script src="{% static 'website/js/jquery.min.js' %}"></script>
+    <script src="{% static 'website/js/jquery.dropotron.min.js' %}"></script>
+    <script src="{% static 'website/js/jquery.scrollgress.min.js' %}"></script>
+    <script src="{% static 'website/js/skel.min.js' %}"></script>
+    <script src="{% static 'website/js/skel-layers.min.js' %}"></script>
+    <script src="{% static 'website/js/init.js' %}"></script>
+    <script src="{% static '/layer/layer.js' %}"></script>
+    <script src="{% static 'website/js/jquery.tabulation.js' %}"></script>
+    <script src="{% static 'website/js/pagination.js' %}"></script>
+{#    <link rel="stylesheet" href="{% static 'website/css/bootstrap.min.css' %}">#}
+    <link rel="stylesheet" type="text/css" href="{% static 'website/css/htmleaf-demo.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'website/css/skel.css' %}"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'website/css/style.css' %}"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'website/css/style-wide.css' %}"/>
+    <!--[if lte IE 8]><link type="text/css" rel="stylesheet" href="{% static 'website/css/ie/v8.css' %}" /><![endif]-->
+</head>
+<body>
+
+
+{% block content %}
+    <div>这里是默认内容，所有继承自这个模板的，如果不覆盖就显示这里的默认内容。</div>
+{% endblock %}
+<script>
+    function logout(){
+        layer.confirm('确认注销用户？', {
+            btn: ['确定','取消'] //按钮
+            }, function(){
+                $.get({% url 'logout' %},function(data){
+                    location.href = "{% url 'index' %}";
+                });
+            }, function(){
+                layer.msg('用户取消操作！', {
+                    time: 1000, //20s后自动关闭
+                    {#btn: ['明白了', '知道了']#}
+                });
+            });
+    }
+</script>
+<!-- Footer -->
+<footer id="footer">
+    <ul class="copyright">
+        {{ web_foot|safe }}
+    </ul>
+</footer>
+
+</body>
+</html>

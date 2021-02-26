@@ -1,0 +1,26 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.douban.com/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+django = "*"
+future = "*"
+django-crispy-forms = "*"
+django-reversion = "*"
+django-formtools = "*"
+xlwt = "*"
+xlsxwriter = "*"
+httplib2 = "*"
+django-import-export = "*"
+django-filter = "*"
+django-filters = "*"
+djangorestframework-jwt = "*"
+django-cors-headers = "*"
+coverage = "*"
+drfdocs = "*"
+
+[requires]
+python_version = "3.7"

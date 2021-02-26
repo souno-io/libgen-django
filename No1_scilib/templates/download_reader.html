@@ -1,0 +1,88 @@
+{% extends 'index_base.html' %}
+{% load static %}
+{% block content %}
+	<body>
+
+    <!-- Header -->
+    <header id="header" class="skel-layers-fixed">
+        <h1>{{ web_name }}</h1>
+        <nav id="nav">
+            <ul>
+                <li><a href="{% url 'down_reader' %}">阅读器下载</a></li>
+                {% if not request.user.is_authenticated %}
+                    <li><a class="button" style="color: palevioletred" href="{% url 'login' %}">登录</a></li>
+                {% else %}
+                    <li><a class="button" onclick="logout()" href="">{{ request.user.full_name }}</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+		<!-- Main -->
+			<section id="main" class="container">
+				<!--<header>
+					<h2>阅读器下载</h2>
+					<p>请依照文件格式下载对应的阅读器安装使用</p>
+				</header>-->
+				<div class="row">
+					<div class="12u">
+
+						<!-- Table -->
+							<section class="box">
+								<h3>阅读器安装包：</h3>
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>格式</th>
+												<th>阅读器</th>
+												<th>下载</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>djvu</td>
+												<td>djvuviewer_setup.exe</td>
+                                                <td><a href="http://172.16.0.72:9090/reader/(djvu)djvuviewer_setup.exe">下载</a></td>
+											</tr>
+											<tr>
+												<td>djvu</td>
+												<td>WinDjView-2.1-Setup.exe</td>
+                                                <td><a href="http://172.16.0.72:9090/reader/(djvu)WinDjView-2.1-Setup.exe">下载</a></td>
+											</tr>
+											<tr>
+												<td>mobi</td>
+												<td>MobipocketReader_6.2.exe</td>
+												<td><a href="http://172.16.0.72:9090/reader/(mobi)MobipocketReader_6.2.exe">下载</a></td>
+											</tr>
+											<tr>
+												<td>cdr</td>
+												<td>cdisplay.exe</td>
+												<td><a href="http://172.16.0.72:9090/reader/(cdr)cdisplay.exe">下载</a></td>
+											</tr>
+											<tr>
+												<td>azw3</td>
+												<td>calibre-4.20.0.msi</td>
+												<td><a href="http://172.16.0.72:9090/reader/(azw3)calibre-4.20.0.msi">下载</a></td>
+											</tr>
+                                        	<tr>
+												<td>other</td>
+												<td>ADE_4.5_Installer.exe</td>
+												<td><a href="http://172.16.0.72:9090/reader/ADE_4.5_Installer.exe">下载</a></td>
+											</tr>
+                                        	<tr>
+												<td>other</td>
+												<td>KindleForPC-installer-1.29.58060.exe</td>
+												<td><a href="http://172.16.0.72:9090/reader/KindleForPC-installer-1.29.58060.exe">下载</a></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</section>
+
+					</div>
+				</div>
+			</section>
+		<!-- Footer -->
+
+{% endblock %}

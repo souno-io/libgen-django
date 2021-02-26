@@ -1,0 +1,254 @@
+{% extends 'index_base.html' %}
+{% load static %}
+{% block content %}
+    <body>
+
+    <!-- Header -->
+    <header id="header" class="skel-layers-fixed">
+        <h1>{{ web_name }}</h1>
+        <nav id="nav">
+            <ul>
+                <li><a target="_blank" href="{% url 'down_reader' %}">阅读器下载</a></li>
+                {#                <li><a target="_blank" class="button" href="http://172.16.0.72:9090/DeskApp/GysyyLibgenDesktop.zip">桌面版</a></li>#}
+                {% if not request.user.is_authenticated %}
+                    <li><a class="button" style="color: palevioletred" href="{% url 'login' %}">登录</a></li>
+                {% else %}
+                    <li><a class="button" onclick="logout()" href="">{{ request.user.full_name }}</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main -->
+    <section id="main" class="container">
+        <header>
+            <h2>{{ web_name }}</h2>
+            <p>{{ web_desc }}</p>
+        </header>
+        <div class="row uniform half collapse-at-2">
+            <div class="2u">
+                <div class="select-wrapper">
+                    <select name="category" id="category">
+                        <option value="1">社科书籍</option>
+                        {#                        <option value="1">文学作品</option>#}
+                        {#                        <option value="1">论文文章</option>#}
+                    </select>
+                </div>
+            </div>
+            <div class="8u">
+                <input type="text" name="search" onsubmit="return false;" id="search" value=""
+                       placeholder="输入书籍名字、出版社、作者搜索..."/>
+            </div>
+            <div class="2u">
+                {% if not request.user.is_authenticated %}
+                    <a onclick="layer.alert('请点击右上角登录后使用~')" class="button fit">搜索一下</a>
+                {% else %}
+                    <a onclick="getpush(1)" class="button fit">搜索一下</a>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row uniform half collapse-at-2">
+            <h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;文件格式：</h4>
+            <div class="1.5u">
+                <input type="radio" id="priority-all" name="priority" value="" checked>
+                <label for="priority-all">所有格式</label>
+            </div>
+            <div class="1u">
+                <input type="radio" id="priority-pdf" value="pdf" name="priority">
+                <label for="priority-pdf">pdf</label>
+            </div>
+            <div class="1u">
+                <input type="radio" id="priority-epub" value="epub" name="priority">
+                <label for="priority-epub">epub</label>
+            </div>
+            <div class="1u">
+                <input type="radio" id="priority-mobi" value="mobi" name="priority">
+                <label for="priority-mobi">mobi</label>
+            </div>
+            <div class="1u">
+                <input type="radio" id="priority-ppt" value="ppt" name="priority">
+                <label for="priority-ppt">ppt</label>
+            </div>
+
+            <div class="1u">
+                <input type="radio" id="priority-doc" value="doc" name="priority">
+                <label for="priority-doc">doc</label>
+            </div>
+            <div class="1u">
+                <input type="radio" id="priority-djvu" value="djvu" name="priority">
+                <label for="priority-djvu">djvu</label>
+            </div>
+            <div class="1u">
+                <input type="radio" id="priority-chm" value="chm" name="priority">
+                <label for="priority-chm">chm</label>
+            </div>
+        </div>
+        <br><br>
+
+        {#        <div class="row">#}
+        <div class="16u">
+            <!-- Text -->
+            <section class="box">
+                <div class="table-wrapper">
+                    <table class="alt" id="table">
+                        <thead>
+                        <tr>
+                            <th nowrap="nowrap">书名</th>
+                            <th nowrap="nowrap">作者</th>
+                            <th nowrap="nowrap">年代</th>
+                            <th nowrap="nowrap">格式</th>
+                            <th nowrap="nowrap">大小</th>
+                            <th nowrap="nowrap" style="width: 7%">查看</th>
+                            <th nowrap="nowrap" style="width: 7%">下载</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div align="center">
+                    <!--分页样式-->
+                    <div>
+                        <div class="panel panel-default">
+                            <div class="panel-bd">
+                                <div class="paginations"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        {#        </div>#}
+    </section>
+    <script>
+        window.count_num = 1;
+        window.curren_page = 1;
+        {% if not request.user.is_authenticated %}
+        {% else %}
+            function getpush(page) {
+                {#var index = layer.load(1, {shade: false});#}
+                var index = layer.msg('请稍等，正在查询中...', {
+                    icon: 16,
+                    shade: 0.01,
+                    time: -1
+                });
+                var query = document.getElementById("search").value;
+                var trr = document.getElementById("trr");
+                var format = $('input:radio[name="priority"]:checked').val();
+                var url = 'sci/api/nonfiction/?formats=' + format + '&page=' + page;
+                {#console.log(url);#}
+                $.get(url, {search: query, page_size: 200}, function (data) {
+                    var tbody_old = document.getElementById("tbody");
+                    var tbody = document.createElement('tbody');
+                    console.log(data.count);
+                    window.curren_page = page
+                    window.count_num = data.count;
+                    pageination_push();
+                    //console.log(data.count.length);
+                    tbody.setAttribute("id", "tbody");
+                    for (var i = 0, len = data.results.length; i < len; i++) {
+                        var tr = document.createElement('tr');
+                        tr.className = 'cen';
+                        var doc_id = '';
+                        if (data.results[String(i)].format != 'pdf') {
+                            if (data.results[String(i)].libgenid > 999) {
+                                var doc_id = data.results[String(i)].libgenid.toString().substring(0, data.results[String(i)].libgenid.toString().length - 3) + "000";
+                            } else {
+                                var doc_id = '0'
+                            }
+                            //console.log(data.results[String(i)].title);
+                            tr.innerHTML = '<td>' + data.results[String(i)].title + '</td><td>' + data.results[String(i)].authors + '</td><td>' + data.results[String(i)].year + '</td><td>' + data.results[String(i)].format + '</td><td style="text-align:right">' + (data.results[String(i)].sizeinbytes / 1024 / 1024).toFixed(2) + 'M</td><td><a target="_blank"  href="{% url 'down_reader' %}' + '">阅读器</a></td><td><a id="down' + String(i) + '" target="_blank" style="cursor:pointer;"' + 'onclick="downloadUrlFile(' + "\'http://{{ server_ip }}:{{ server_port }}/" + doc_id + "/" + data.results[String(i)].md5hash.toLowerCase() + '\', \'' + data.results[String(i)].title.replace(/'/g, '') + '.' + data.results[String(i)].format + "'," + String(i) + ')\">下载</a></td>';
+                            tbody.appendChild(tr);
+                        } else {
+                            if (data.results[String(i)].libgenid > 999) {
+                                var doc_id = data.results[String(i)].libgenid.toString().substring(0, data.results[String(i)].libgenid.toString().length - 3) + "000";
+                            } else {
+                                var doc_id = '0'
+                            }
+                            //console.log(data.results[String(i)].title);
+                            tr.innerHTML = '<td>' + data.results[String(i)].title + '</td><td>' + data.results[String(i)].authors + '</td><td>' + data.results[String(i)].year + '</td><td>' + data.results[String(i)].format + '</td><td style="text-align:right">' + (data.results[String(i)].sizeinbytes / 1024 / 1024).toFixed(2) + 'M</td><td><a target="_blank"  href="http://{{ server_ip }}:{{ server_port }}/' + doc_id + '/' + data.results[String(i)].md5hash + '">查看</a></td><td><a id="down' + String(i) + '" target="_blank" style="cursor:pointer;"' + 'onclick="downloadUrlFile(' + "\'http://{{ server_ip }}:{{ server_port }}/" + doc_id + "/" + data.results[String(i)].md5hash.toLowerCase() + '\', \'' + data.results[String(i)].title.replace(/'/g, '') + '.' + data.results[String(i)].format + "'," + String(i) + ')\">下载</a></td>';
+                            tbody.appendChild(tr);
+                        }
+                    }
+                    table.replaceChild(tbody, tbody_old);
+                    layer.closeAll();
+                });
+            }
+        {% endif %}
+        $('#search').bind('keypress', function (event) {
+            if (event.keyCode == "13") {
+                {% if request.user.is_authenticated %}
+                    getpush(1);
+                {% else %}
+                    layer.alert('请点击右上角登录后使用~');
+                {% endif %}
+            }
+        });
+
+        /**
+         * 获取页面文件名
+         * @param url 文件url
+         * @param fileName
+         */
+        function downloadUrlFile(url, fileName, id) {
+            layer.tips('从服务器获取文件流...', '#down' + id, {
+                tips: [2, '#646464'],
+                time: -1
+            });
+            url = url.replace(/\\/g, '/');
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'blob';
+            //xhr.setRequestHeader('Authorization', 'Basic a2VybWl0Omtlcm1pdA==');
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    layer.closeAll();
+                    layer.tips('文件已缓存', '#down' + id, {
+                        tips: [2, '#646464']
+                    });
+                    // 获取文件blob数据并保存
+                    saveAs(xhr.response, fileName);
+                } else {
+                    layer.closeAll();
+                    layer.tips('下载出错，(' + xhr.status + ')请联系管理员', '#down' + id, {
+                        tips: [2, '#646464']
+                    });
+                }
+            };
+
+            xhr.send();
+        }
+
+        /**
+         * URL方式保存文件到本地
+         * @param data 文件的blob数据
+         * @param name 文件名
+         */
+        function saveAs(data, name) {
+            var urlObject = window.URL || window.webkitURL || window;
+            var export_blob = new Blob([data]);
+            var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a')
+            save_link.href = urlObject.createObjectURL(export_blob);
+            save_link.download = name;
+            save_link.click();
+        }
+    </script>
+    <script>
+        function pageination_push() {
+            if (count_num / 200 < 1) {
+                pagenum = 1;
+            } else {
+                pagenum = parseInt(count_num / 200)
+            }
+            $(".paginations").createPage({
+                pageCount: pagenum,
+                current: curren_page,
+                backFn: function (p) {
+                    console.log(p);
+                    getpush(p)
+                }
+            });
+        }
+    </script>
+{% endblock %}
