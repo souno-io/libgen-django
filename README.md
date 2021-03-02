@@ -45,7 +45,7 @@ pymysql
 
 [http://libgen.rs/dbdumps/](http://libgen.rs/dbdumps/)
 
-在此处下载数据库dump，导入开发数据库中。
+在此处下载数据库dump,导入开发数据库中。
 
 ### 联系方式
 
